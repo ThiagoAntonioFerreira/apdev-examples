@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<flow name="apdev-examplesFlow" doc:id="7381bc19-6192-4949-aca6-964c640fb263" >
-		<http:listener doc:name="Listener" doc:id="a476bd03-8639-4fb9-93ee-fc8d132481fc" />
-		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="825e564f-1737-47c7-8998-4dba539363b8" />
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="84f2f8b0-49f6-4ec9-9cd7-b2939521846c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="922a2177-268d-47e1-9e86-ecfaddfa328b" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="helloFlow" doc:id="7381bc19-6192-4949-aca6-964c640fb263" >
+		<http:listener doc:name="Hello" doc:id="a476bd03-8639-4fb9-93ee-fc8d132481fc" path="/hello" allowedMethods="GET" config-ref="HTTP_Listener_config">
+			<ee:repeatable-file-store-stream inMemorySize="1024" />
+		</http:listener>
+		<set-payload value="Hello" doc:name="Set Payload" doc:id="825e564f-1737-47c7-8998-4dba539363b8" />
+		<logger level="INFO" doc:name="Logger" doc:id="330a5621-77e5-45a5-8918-d32f2c5e668b" />
+	</flow>
+	<flow name="goodbyeFlow" doc:id="3ad913ff-03ea-4a95-81c3-2be6fd3e4ca6" >
+		<http:listener doc:name="Listener" doc:id="b9076225-2202-4baa-93df-7d542205a3df" config-ref="HTTP_Listener_config" path="/goodbye"/>
+		<set-payload value="GoodBye" doc:name="GoodBye" doc:id="a562ee52-7d1e-46ef-a16a-5a1bd819fe8b" />
+		<http:request method="GET" doc:name="GET /goodbye" doc:id="51a0c886-ab14-428e-b4af-5b775dbaca20" path="/goodbye" config-ref="HTTP_Request_configuration" responseTimeout="300000"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1d49ea00-b4d4-437a-997b-9db826fd7b9c" />
 	</flow>
 </mule>
